@@ -23,6 +23,9 @@ declare namespace LX {
       homepage: string
       version: string
       sources?: UserApiSources
+      managedSourceName?: string
+      managedSourceUrl?: string
+      managedUpdatedAt?: number
     }
 
     interface UserApiStatus {

@@ -1,10 +1,10 @@
-import { type InitParams, onScriptAction, sendAction, type ResponseParams, type UpdateInfoParams, type RequestParams } from '@/utils/nativeModules/userApi'
+import { type InitParams, onScriptAction, sendAction, type ResponseParams, type RequestParams } from '@/utils/nativeModules/userApi'
 import { log, setUserApiList, setUserApiStatus } from '@/core/userApi'
 import settingState from '@/store/setting/state'
 import BackgroundTimer from 'react-native-background-timer'
 import { fetchData } from './request'
 import { getUserApiList } from '@/utils/data'
-import { confirmDialog, openUrl, tipDialog } from '@/utils/tools'
+import { tipDialog } from '@/utils/tools'
 
 
 export default async(setting: LX.AppSetting) => {
@@ -189,28 +189,7 @@ export default async(setting: LX.AppSetting) => {
     }
     if (!global.lx.apiInitPromise[1]) global.lx.apiInitPromise[2](status)
   }
-  const showUpdateAlert = ({ name, log, updateUrl }: UpdateInfoParams) => {
-    if (updateUrl) {
-      void confirmDialog({
-        message: `${global.i18n.t('user_api_update_alert', { name })}\n${log}`,
-        // selection: true,
-        // showCancel: true,
-        confirmButtonText: global.i18n.t('user_api_update_alert_open_url'),
-        cancelButtonText: global.i18n.t('close'),
-      }).then(confirm => {
-        if (!confirm) return
-        setTimeout(() => {
-          void openUrl(updateUrl)
-        }, 300)
-      })
-    } else {
-      void tipDialog({
-        message: `${global.i18n.t('user_api_update_alert', { name })}\n${log}`,
-        // selection: true,
-        btnText: global.i18n.t('ok'),
-      })
-    }
-  }
+  const showUpdateAlert = (_data: unknown) => {}
 
   onScriptAction((event) => {
     // console.log('script actuon: ', event)

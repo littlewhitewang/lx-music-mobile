@@ -5,6 +5,7 @@ import { isActive } from '@/utils/tools'
 import BackgroundTimer from 'react-native-background-timer'
 import playerState from '@/store/player/state'
 import { setNowPlayTime } from '@/core/player/progress'
+import { refreshAutoUserApiSourcesAfterFailure } from '@/core/autoUserApiSource'
 
 
 export default () => {
@@ -104,6 +105,7 @@ export default () => {
       return
     }
     if (!isEmpty()) void setStop()
+    void refreshAutoUserApiSourcesAfterFailure()
 
     if (isActive()) {
       setStatusText(global.i18n.t('player__error'))

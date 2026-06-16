@@ -53,6 +53,11 @@ const registerPlaybackService = async() => {
     void handleExitApp('Remote Stop')
   })
 
+  TrackPlayer.addEventListener(TPEvent.RemoteDuck, ({ permanent, paused, ducking }) => {
+    // Give other apps audio focus and require a manual resume afterwards.
+    if (permanent || paused || ducking) void pause()
+  })
+
   // TrackPlayer.addEventListener(TPEvent.RemoteDuck, async({ permanent, paused, ducking }) => {
   //   console.log('remote-duck')
   //   if (paused) {

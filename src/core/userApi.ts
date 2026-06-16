@@ -1,5 +1,5 @@
 import { action, state } from '@/store/userApi'
-import { addUserApi, getUserApiScript, removeUserApi as removeUserApiFromStore, setUserApiAllowShowUpdateAlert as setUserApiAllowShowUpdateAlertFromStore } from '@/utils/data'
+import { addUserApi, getUserApiScript, removeUserApi as removeUserApiFromStore, setUserApiAllowShowUpdateAlert as setUserApiAllowShowUpdateAlertFromStore, upsertUserApi as upsertUserApiToStore } from '@/utils/data'
 import { destroy, loadScript } from '@/utils/nativeModules/userApi'
 import { log as writeLog } from '@/utils/log'
 
@@ -30,6 +30,14 @@ export const setUserApiList: typeof action['setUserApiList'] = (list) => {
 export const importUserApi = async(script: string) => {
   const info = await addUserApi(script)
   action.addUserApi(info)
+}
+
+export const upsertUserApi = async(id: string, script: string, extraInfo?: Partial<LX.UserApi.UserApiInfo>) => {
+  const info = await upsertUserApiToStore(id, script, extraInfo)
+  action.setUserApiList(state.list.some(api => api.id == info.id)
+    ? state.list.map(api => api.id == info.id ? info : api)
+    : [...state.list, info])
+  return info
 }
 
 export const removeUserApi = async(ids: string[]) => {
