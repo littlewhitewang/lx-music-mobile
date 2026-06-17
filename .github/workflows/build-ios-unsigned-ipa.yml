@@ -89,8 +89,25 @@ jobs:
 
           test -d "$APP_PATH"
           xattr -cr "$APP_PATH"
-          /usr/bin/codesign --force --deep --sign - --timestamp=none "$APP_PATH"
-          /usr/bin/codesign --verify --deep --strict "$APP_PATH"
+
+          if [ -d "$APP_PATH/Frameworks" ]; then
+            find "$APP_PATH/Frameworks" -type d -name "*.framework" -print0 | while IFS= read -r -d '' FRAMEWORK; do
+              echo "Ad-hoc signing framework: $FRAMEWORK"
+              /usr/bin/codesign --force --sign - --timestamp=none "$FRAMEWORK"
+              /usr/bin/codesign --verify --strict "$FRAMEWORK"
+            done
+          fi
+
+          if [ -d "$APP_PATH/PlugIns" ]; then
+            find "$APP_PATH/PlugIns" -type d -name "*.appex" -print0 | while IFS= read -r -d '' APPEX; do
+              echo "Ad-hoc signing extension: $APPEX"
+              /usr/bin/codesign --force --sign - --timestamp=none "$APPEX"
+              /usr/bin/codesign --verify --strict "$APPEX"
+            done
+          fi
+
+          /usr/bin/codesign --force --sign - --timestamp=none "$APP_PATH"
+          /usr/bin/codesign --verify --deep --strict --verbose=2 "$APP_PATH"
 
       - name: Package unsigned IPA
         shell: bash
@@ -106,7 +123,7 @@ jobs:
           rm -rf "$IPA_DIR"
           mkdir -p "$IPA_DIR/Payload"
           cp -R "$APP_PATH" "$IPA_DIR/Payload/"
-          /usr/bin/ditto -c -k --keepParent "$IPA_DIR/Payload" "$IPA_PATH"
+          (cd "$IPA_DIR" && /usr/bin/zip -qry "$ARTIFACT_NAME.ipa" Payload)
           shasum -a 256 "$IPA_PATH"
 
       - name: Upload unsigned IPA
