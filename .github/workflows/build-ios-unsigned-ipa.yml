@@ -1,6 +1,11 @@
 name: Build iOS Unsigned IPA
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - .github/workflows/build-ios-unsigned-ipa.yml
   workflow_dispatch:
     inputs:
       bundle_identifier:
@@ -61,7 +66,7 @@ jobs:
         shell: bash
         env:
           NO_FLIPPER: 1
-          BUNDLE_IDENTIFIER: ${{ inputs.bundle_identifier }}
+          BUNDLE_IDENTIFIER: ${{ inputs.bundle_identifier || 'com.q1515.lxmusicmobile' }}
         run: |
           set -euo pipefail
           xcodebuild \
@@ -90,7 +95,7 @@ jobs:
       - name: Package unsigned IPA
         shell: bash
         env:
-          ARTIFACT_NAME: ${{ inputs.artifact_name }}
+          ARTIFACT_NAME: ${{ inputs.artifact_name || 'lx-music-mobile-ios-unsigned' }}
         run: |
           set -euo pipefail
           APP_PATH="build/ios/Build/Products/Release-iphoneos/LxMusicMobile.app"
@@ -107,7 +112,7 @@ jobs:
       - name: Upload unsigned IPA
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.artifact_name }}
+          name: ${{ inputs.artifact_name || 'lx-music-mobile-ios-unsigned' }}
           path: build/ios/ipa/*.ipa
           if-no-files-found: error
           retention-days: 14
