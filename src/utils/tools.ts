@@ -155,7 +155,7 @@ export const assertApiSupport = (source: LX.Source): boolean => {
 // }
 
 export const exitApp = () => {
-  if (isAndroid) BackHandler.exitApp()
+  if (isAndroid) BackHandler?.exitApp?.()
 }
 
 export const handleSaveFile = async(path: string, data: any) => {
